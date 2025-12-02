@@ -1,0 +1,43 @@
+### 获取所有菜品
+GET http://localhost:8080/api/dishes
+Accept: application/json
+
+### 创建新菜品
+POST http://localhost:8080/api/dishes
+Content-Type: application/json
+
+{
+  "name": "宫保鸡丁",
+  "price": 38.00,
+  "description": "经典川菜，麻辣鲜香",
+  "category": "热菜",
+  "imageUrl": "kungpao.jpg",
+  "isAvailable": true
+}
+
+### 根据ID获取菜品
+GET http://localhost:8080/api/dishes/1
+Accept: application/json
+
+### 按分类查询
+#GET http://localhost:8080/api/dishes/category/热菜
+#Accept: application/json
+### 按分类查询（使用URL编码）之前的400，中文编码问题
+GET http://localhost:8080/api/dishes/category/%E7%83%AD%E8%8F%9C
+Accept: application/json
+
+### 更新菜品
+PUT http://localhost:8080/api/dishes/1
+Content-Type: application/json
+
+{
+  "name": "宫保鸡丁（大份）",
+  "price": 45.00,
+  "description": "经典川菜，麻辣鲜香 - 大份装",
+  "category": "热菜",
+  "imageUrl": "kungpao-large.jpg",
+  "isAvailable": true
+}
+
+### 删除菜品
+DELETE http://localhost:8080/api/dishes/1
