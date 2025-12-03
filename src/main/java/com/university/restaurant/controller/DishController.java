@@ -1,16 +1,20 @@
-
 package com.university.restaurant.controller;
 
 import com.university.restaurant.entity.Dish;
 import com.university.restaurant.service.DishService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-        import java.util.List;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/dishes")
-@CrossOrigin(origins = "*") // 允许跨域
+@CrossOrigin(origins = "*")
 public class DishController {
 
     @Autowired
@@ -18,10 +22,20 @@ public class DishController {
 
     // 获取所有菜品
     @GetMapping
-    public List<Dish> getAllDishes() {
-        return dishService.getAllDishes();
+    public ResponseEntity<List<Dish>> getAllDishes() {
+        List<Dish> dishes = dishService.getAllDishes();
+        return ResponseEntity.ok(dishes);
     }
-
+    // 分页查询菜品
+    @GetMapping("/page")
+    public ResponseEntity<Page<Dish>> getDishesByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Dish> dishPage = dishService.getDishesByPage(pageable);
+        return ResponseEntity.ok(dishPage);
+    }
     // 根据ID获取菜品
     @GetMapping("/{id}")
     public ResponseEntity<Dish> getDishById(@PathVariable Long id) {
@@ -32,35 +46,48 @@ public class DishController {
         return ResponseEntity.notFound().build();
     }
 
-    // 根据分类获取菜品
-    @GetMapping("/category/{category}")
-    public List<Dish> getDishesByCategory(@PathVariable String category) {
-        return dishService.getDishesByCategory(category);
-    }
-
-    // 获取可用菜品
-    @GetMapping("/available")
-    public List<Dish> getAvailableDishes() {
-        return dishService.getAvailableDishes();
-    }
-
-    // 创建菜品
+    // 创建菜品 - 添加@Valid注解进行验证
     @PostMapping
-    public Dish createDish(@RequestBody Dish dish) {
-        return dishService.createDish(dish);
-    }
-
-    // 更新菜品
-    @PutMapping("/{id}")
-    public ResponseEntity<Dish> updateDish(@PathVariable Long id, @RequestBody Dish dishDetails) {
-        Dish updatedDish = dishService.updateDish(id, dishDetails);
-        if (updatedDish != null) {
-            return ResponseEntity.ok(updatedDish);
+    public ResponseEntity<?> createDish(@Valid @RequestBody Dish dish) {
+        try {
+            Dish savedDish = dishService.createDish(dish);
+            return ResponseEntity.ok(savedDish);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "message", "创建菜品失败: " + e.getMessage())
+            );
         }
-        return ResponseEntity.notFound().build();
     }
 
-    // 更新菜品状态
+    // 更新菜品 - 添加验证
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateDish(@PathVariable Long id, @Valid @RequestBody Dish dishDetails) {
+        try {
+            Dish updatedDish = dishService.updateDish(id, dishDetails);
+            if (updatedDish != null) {
+                return ResponseEntity.ok(updatedDish);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "message", "更新菜品失败: " + e.getMessage())
+            );
+        }
+    }
+
+    // 其他方法保持不变...
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Dish>> getDishesByCategory(@PathVariable String category) {
+        List<Dish> dishes = dishService.getDishesByCategory(category);
+        return ResponseEntity.ok(dishes);
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<Dish>> getAvailableDishes() {
+        List<Dish> dishes = dishService.getAvailableDishes();
+        return ResponseEntity.ok(dishes);
+    }
+
     @PatchMapping("/{id}/availability")
     public ResponseEntity<Dish> updateAvailability(@PathVariable Long id, @RequestParam Boolean available) {
         Dish updatedDish = dishService.updateDishAvailability(id, available);
@@ -70,16 +97,17 @@ public class DishController {
         return ResponseEntity.notFound().build();
     }
 
-    // 删除菜品
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDish(@PathVariable Long id) {
         dishService.deleteDish(id);
         return ResponseEntity.ok().build();
     }
 
-    // 搜索菜品
     @GetMapping("/search")
-    public List<Dish> searchDishes(@RequestParam String keyword) {
-        return dishService.searchDishes(keyword);
+    public ResponseEntity<List<Dish>> searchDishes(@RequestParam String keyword) {
+        List<Dish> dishes = dishService.searchDishes(keyword);
+        return ResponseEntity.ok(dishes);
     }
+
+
 }

@@ -39,5 +39,47 @@ Content-Type: application/json
   "isAvailable": true
 }
 
+
+
+### 创建菜品 - 验证失败案例（名称为空）
+POST http://localhost:8080/api/dishes
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": -10.00,
+  "category": ""
+}
+
+### 测试分页查询
+GET http://localhost:8080/api/dishes/page?page=0&size=5
+Accept: application/json
+
+### 测试第二页
+GET http://localhost:8080/api/dishes/page?page=1&size=3
+Accept: application/json
+
+### 测试验证功能 - 错误数据
+POST http://localhost:8080/api/dishes
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": -10.00,
+  "category": ""
+}
+
+### 测试验证功能 - 正确数据
+POST http://localhost:8080/api/dishes
+Content-Type: application/json
+
+{
+  "name": "麻婆豆腐",
+  "price": 28.00,
+  "description": "麻辣可口，下饭神器",
+  "category": "热菜",
+  "imageUrl": "mapotofu.jpg",
+  "isAvailable": true
+}
 ### 删除菜品
-DELETE http://localhost:8080/api/dishes/1
+DELETE http://localhost:8080/api/dishes/3
