@@ -25,7 +25,8 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
+    // 添加Spring Security依赖
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // 测试依赖
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
