@@ -34,4 +34,6 @@ public interface UserService {
 
     // 检查邮箱是否可用
     boolean isEmailAvailable(String email);
+
+    void logout(Long id);
 }

@@ -4,6 +4,8 @@ import com.university.restaurant.entity.User;
 import com.university.restaurant.repository.UserRepository;
 import com.university.restaurant.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -106,6 +108,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
     @Override
     public boolean isUsernameAvailable(String username) {
         return !userRepository.existsByUsername(username);
@@ -119,5 +122,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isEmailAvailable(String email) {
         return email == null || email.isEmpty() || !userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public  void logout(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        optionalUser.ifPresent(user -> {
+            user.setLastLoginTime(null);
+            user.setIsActive(false);
+            userRepository.save(user);
+        });
+        SecurityContextHolder.clearContext();
     }
 }

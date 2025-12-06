@@ -1,18 +1,66 @@
-### 测试1：检查用户名是否可用
+### 测试1：检查用户名
 GET http://localhost:8080/api/users/check-username?username=testuser
 
-### 测试2：用户注册
+### 测试2：注册新用户
+POST http://localhost:8080/api/users/register
+Content-Type: application/json
+
+{
+  "username": "newuser2",
+  "password": "123456",
+  "phone": "13987654322",
+  "email": "new2@example.com"
+}
+
+### 测试3：登录
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "username": "newuser2",
+  "password": "123456"
+}
+
+### 测试4：获取所有用户（不应返回密码）
+GET http://localhost:8080/api/users
+
+### 测试5：获取单个用户（不应返回密码）
+GET http://localhost:8080/api/users/2
+
+### 测试6：更新用户信息（只更新提供的字段）
+PUT http://localhost:8080/api/users/2
+Content-Type: application/json
+
+{
+  "phone": "13900000053",
+  "email": "updated@example.com"
+}
+
+### 测试7：注销用户
+POST http://localhost:8080/api/users/1/logout
+
+### 测试8：验证更新结果
+GET http://localhost:8080/api/users/2
+
+
+
+### 阶段1：准备测试环境
+### 清除可能存在的测试数据
+DELETE http://localhost:8080/api/users/clean-test-data
+
+### 阶段2：测试注销功能
+### 测试1：注册新测试用户
 POST http://localhost:8080/api/users/register
 Content-Type: application/json
 
 {
   "username": "testuser",
   "password": "123456",
-  "phone": "13812345678",
-  "email": "test@example.com"
+  "phone": "13812340001",
+  "email": "test1@example.com"
 }
 
-### 测试3：用户登录
+### 测试2：登录用户
 POST http://localhost:8080/api/users/login
 Content-Type: application/json
 
@@ -21,17 +69,19 @@ Content-Type: application/json
   "password": "123456"
 }
 
-### 测试4：获取所有用户
-GET http://localhost:8080/api/users
-
-### 测试5：获取单个用户
+### 测试3：验证登录状态
 GET http://localhost:8080/api/users/1
+### 应返回 lastLoginTime 有值
 
-### 测试6：更新用户信息
-PUT http://localhost:8080/api/users/1
-Content-Type: application/json
+### 测试4：执行注销
+POST http://localhost:8080/api/users/1/logout
 
-{
-  "phone": "13887654321",
-  "email": "newemail@example.com"
-}
+### 测试5：验证注销效果
+GET http://localhost:8080/api/users/1
+### 应返回：
+### lastLoginTime: null
+### isLoggedIn: false
+
+
+### 阶段3：清理测试数据
+DELETE http://localhost:8080/api/users/2

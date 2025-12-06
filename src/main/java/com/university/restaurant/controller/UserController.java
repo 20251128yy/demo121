@@ -1,5 +1,7 @@
 package com.university.restaurant.controller;
 
+import com.university.restaurant.dto.UserDTO;
+import com.university.restaurant.dto.UserUpdateDTO;
 import com.university.restaurant.entity.User;
 import com.university.restaurant.service.UserService;
 import jakarta.validation.Valid;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,18 +21,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // 用户注册
+    // 用户注册 - 使用DTO过滤密码
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody User user) {
         try {
             User registeredUser = userService.register(user);
-            return ResponseEntity.ok(createSuccessResponse("注册成功", registeredUser));
+            UserDTO userDTO = UserDTO.fromEntity(registeredUser); // 转换为DTO
+            return ResponseEntity.ok(createSuccessResponse("注册成功", userDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
     }
 
-    // 用户登录
+    // 用户登录 - 使用DTO过滤密码
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         try {
@@ -37,7 +41,8 @@ public class UserController {
             String password = loginRequest.get("password");
 
             User user = userService.login(username, password);
-            return ResponseEntity.ok(createSuccessResponse("登录成功", user));
+            UserDTO userDTO = UserDTO.fromEntity(user); // 转换为DTO
+            return ResponseEntity.ok(createSuccessResponse("登录成功", userDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
         }
@@ -53,30 +58,41 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // 获取所有用户（管理员用）
+    // 获取所有用户 - 使用DTO过滤密码
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        // 转换为DTO列表
+        List<UserDTO> userDTOs = users.stream()
+                .map(UserDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(userDTOs);
     }
 
-    // 根据ID获取用户
+    // 根据ID获取用户 - 使用DTO过滤密码
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         if (user != null) {
-            return ResponseEntity.ok(user);
+            UserDTO userDTO = UserDTO.fromEntity(user); // 转换为DTO
+            return ResponseEntity.ok(userDTO);
         }
         return ResponseEntity.notFound().build();
     }
 
-    // 更新用户信息
+    // 更新用户信息 - 使用专门的UpdateDTO
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody User userDetails) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         try {
+            // 创建User对象，只设置可更新的字段
+            User userDetails = new User();
+            userDetails.setPhone(userUpdateDTO.getPhone());
+            userDetails.setEmail(userUpdateDTO.getEmail());
+
             User updatedUser = userService.updateUser(id, userDetails);
             if (updatedUser != null) {
-                return ResponseEntity.ok(createSuccessResponse("更新成功", updatedUser));
+                UserDTO userDTO = UserDTO.fromEntity(updatedUser);
+                return ResponseEntity.ok(createSuccessResponse("更新成功", userDTO));
             }
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
@@ -91,15 +107,29 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    // 更新用户状态
+    // 更新用户状态 - 使用DTO过滤密码
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateUserStatus(@PathVariable Long id, @RequestParam Boolean active) {
         User updatedUser = userService.updateUserStatus(id, active);
         if (updatedUser != null) {
             String message = active ? "用户已启用" : "用户已禁用";
-            return ResponseEntity.ok(createSuccessResponse(message, updatedUser));
+            UserDTO userDTO = UserDTO.fromEntity(updatedUser);
+            return ResponseEntity.ok(createSuccessResponse(message, userDTO));
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // 添加注销功能
+    @PostMapping("/{id}/logout")
+    public ResponseEntity<?> logout(@PathVariable Long id) {
+        try {
+            userService.logout(id);
+            return ResponseEntity.ok()
+                    .header("Clear-Site-Data", "\"cache\", \"cookies\", \"storage\"")
+                    .body(createSuccessResponse("注销成功", null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
+        }
     }
 
     // 工具方法：创建成功响应

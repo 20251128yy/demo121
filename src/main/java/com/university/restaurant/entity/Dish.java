@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -55,4 +57,6 @@ public class Dish {
         this.category = category;
         this.isAvailable = isAvailable;
     }
+    @OneToMany(mappedBy = "dish")
+    private List<OrderItem> orderItems = new ArrayList<>();
 }

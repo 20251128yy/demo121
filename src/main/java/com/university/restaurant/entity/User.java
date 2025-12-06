@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -13,6 +15,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "is_logged_in",nullable = false)
+    private  Boolean isLoggedIn = false;
 
     @NotBlank(message = "用户名不能为空")
     @Size(min = 3, max = 20, message = "用户名长度3-20个字符")
@@ -59,4 +64,6 @@ public class User {
         this.isActive = true;
         this.createTime = LocalDateTime.now();
     }
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders = new ArrayList<>();
 }
