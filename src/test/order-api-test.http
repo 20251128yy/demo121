@@ -1,0 +1,43 @@
+### 测试1：创建订单
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "address": "宿舍楼A栋301室",
+  "phone": "13812345678",
+  "note": "不要放辣",
+  "items": [
+    {
+      "dishId": 4,
+      "quantity": 2
+    },
+    {
+      "dishId": 5,
+      "quantity": 1
+    }
+  ]
+}
+
+### 测试2：获取订单详情
+GET http://localhost:8080/api/orders/1
+
+### 测试3：获取用户所有订单
+GET http://localhost:8080/api/orders/user/2
+
+### 测试4：更新订单状态为准备中
+PATCH http://localhost:8080/api/orders/1/status?status=PREPARING
+
+### 测试5：获取订单统计
+GET http://localhost:8080/api/orders/user/2/stats
+
+### 测试6：取消订单
+POST http://localhost:8080/api/orders/1/cancel
+Content-Type: application/json
+
+{
+  "reason": "用户取消订单"
+}
+
+### 测试7：查询订单（按订单号）
+GET http://localhost:8080/api/orders/number/ORD1765066963821842
