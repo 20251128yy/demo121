@@ -14,6 +14,7 @@ public class OrderDTO {
     private String orderNumber;
     private Long userId;
     private String username;
+    private String userPhone;
     private BigDecimal totalAmount;
     private String status;
     private String address;
@@ -28,11 +29,18 @@ public class OrderDTO {
     private List<OrderItemDTO> items;
 
     public static OrderDTO fromEntity(Order order) {
+        if (order == null) return null;
+
         OrderDTO dto = new OrderDTO();
         dto.setId(order.getId());
         dto.setOrderNumber(order.getOrderNumber());
-        dto.setUserId(order.getUser() != null ? order.getUser().getId() : null);
-        dto.setUsername(order.getUser() != null ? order.getUser().getUsername() : null);
+
+        if (order.getUser() != null) {
+            dto.setUserId(order.getUser().getId());
+            dto.setUsername(order.getUser().getUsername());
+            dto.setUserPhone(order.getUser().getPhone());
+        }
+
         dto.setTotalAmount(order.getTotalAmount());
         dto.setStatus(order.getStatus());
         dto.setAddress(order.getAddress());
@@ -50,6 +58,7 @@ public class OrderDTO {
                     .map(OrderItemDTO::fromEntity)
                     .collect(Collectors.toList()));
         }
+
         return dto;
     }
 }

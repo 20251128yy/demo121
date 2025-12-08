@@ -21,7 +21,8 @@ dependencies {
 
     // MariaDB 驱动
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
-
+    // 添加JPA规范依赖
+    implementation 'org.springframework.data:spring-data-jpa'
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

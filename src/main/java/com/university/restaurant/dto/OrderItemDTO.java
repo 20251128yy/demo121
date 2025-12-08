@@ -10,21 +10,32 @@ public class OrderItemDTO {
     private Long orderId;
     private Long dishId;
     private String dishName;
+    private String dishImage;
+    private String category;
     private BigDecimal dishPrice;
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal subtotal;
 
     public static OrderItemDTO fromEntity(OrderItem item) {
+        if (item == null) return null;
+
         OrderItemDTO dto = new OrderItemDTO();
         dto.setId(item.getId());
         dto.setOrderId(item.getOrder() != null ? item.getOrder().getId() : null);
-        dto.setDishId(item.getDish() != null ? item.getDish().getId() : null);
-        dto.setDishName(item.getDish() != null ? item.getDish().getName() : null);
-        dto.setDishPrice(item.getDish() != null ? item.getDish().getPrice() : null);
+
+        if (item.getDish() != null) {
+            dto.setDishId(item.getDish().getId());
+            dto.setDishName(item.getDish().getName());
+            dto.setDishImage(item.getDish().getImageUrl());
+            dto.setCategory(item.getDish().getCategory());
+            dto.setDishPrice(item.getDish().getPrice());
+        }
+
         dto.setQuantity(item.getQuantity());
         dto.setPrice(item.getPrice());
-        dto.setSubtotal(item.getSubtotal());
+        dto.setSubtotal(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+
         return dto;
     }
 }

@@ -1,0 +1,50 @@
+### 1. 创建订单
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "address": "宿舍楼A栋301室",
+  "phone": "13812345678",
+  "note": "不要放辣",
+  "items": [
+    {
+      "dishId": 4,
+      "quantity": 2
+    },
+    {
+      "dishId": 5,
+      "quantity": 1
+    }
+  ]
+}
+
+### 2. 获取所有订单
+GET http://localhost:8080/api/orders
+
+### 3. 获取用户订单
+GET http://localhost:8080/api/orders/user/2
+
+### 4. 分页查询
+GET http://localhost:8080/api/orders/page?page=0&size=10&sort=orderTime&dir=desc
+
+### 5. 支付订单
+POST http://localhost:8080/api/orders/2/pay?paymentMethod=WECHAT
+
+### 6. 开始准备
+POST http://localhost:8080/api/orders/2/prepare
+
+### 7. 开始配送
+POST http://localhost:8080/api/orders/2/deliver
+
+### 8. 完成订单
+POST http://localhost:8080/api/orders/2/complete
+
+### 9. 搜索订单
+GET http://localhost:8080/api/orders/search?keyword=宿舍
+
+### 10. 获取统计
+GET http://localhost:8080/api/orders/stats
+
+### 11. 获取用户统计
+GET http://localhost:8080/api/orders/stats/user/2
