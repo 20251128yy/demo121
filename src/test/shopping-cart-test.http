@@ -1,0 +1,38 @@
+### 1. 添加到购物车
+POST http://localhost:8080/api/cart/user/2
+Content-Type: application/json
+
+{
+  "dishId": 5,
+  "quantity": 2,
+  "specification": "大份",
+  "note": "不要葱",
+  "selected": true
+}
+
+### 2. 获取购物车
+GET http://localhost:8080/api/cart/user/2
+
+### 3. 获取购物车统计
+GET http://localhost:8080/api/cart/user/2/info
+
+### 4. 更新购物车项数量
+PUT http://localhost:8080/api/cart/1
+Content-Type: application/json
+
+{
+  "dishId": 5,
+  "quantity": 3
+}
+
+### 5. 更新选中状态
+PATCH http://localhost:8080/api/cart/1/select?selected=false
+
+### 6. 删除购物车项
+DELETE http://localhost:8080/api/cart/1
+
+### 7. 清空选中项
+DELETE http://localhost:8080/api/cart/user/1/clear-selected
+
+### 8. 清空购物车
+DELETE http://localhost:8080/api/cart/user/1/clear
